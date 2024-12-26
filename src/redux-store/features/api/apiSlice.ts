@@ -16,7 +16,7 @@ export const apiSlice = createApi({
         }),
         loadUser: builder.query({
             query: (data) => ({
-                url: "lms.lms.api.get_user_info"
+                url: "api/method/lms.lms.api.get_user_info"
                 , method: "GET"
                 , credentials: "include" as const
             })

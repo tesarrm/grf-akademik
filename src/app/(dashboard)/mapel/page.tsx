@@ -1,9 +1,6 @@
 // React Imports
 import type { ReactElement } from 'react'
 
-// Next Imports
-import dynamic from 'next/dynamic'
-
 // export default function Page() {
 //   return <h1>Mapel</h1>
 // }
@@ -12,12 +9,6 @@ import dynamic from 'next/dynamic'
 // import AcademyMyCourse from '@/views/apps/academy/my-courses'
 import AcademyMyCourse from '@/views/my-courses'
 import AccountSettings from '@/views/account-settings'
-
-const AccountTab = dynamic(() => import('@views/account-settings/account'))
-const SecurityTab = dynamic(() => import('@views/account-settings/security'))
-const BillingPlansTab = dynamic(() => import('@views/account-settings/billing-plans'))
-const NotificationsTab = dynamic(() => import('@views/account-settings/notifications'))
-const ConnectionsTab = dynamic(() => import('@views/account-settings/connections'))
 
 // Server Action Imports
 import { getServerMode } from '@core/utils/serverHelpers'
@@ -43,21 +34,14 @@ import { getAcademyData } from '@/app/server/real-actions'
   return res.json()
 } */
 
-// Vars
-const tabContentList = (): { [key: string]: ReactElement } => ({
-  account: <AccountTab />,
-  security: <SecurityTab />,
-  'billing-plans': <BillingPlansTab />,
-  notifications: <NotificationsTab />,
-  connections: <ConnectionsTab />
-})
 
 const MyCoursePage = async () => {
   // Vars
   const mode = getServerMode()
   const data = await getAcademyData()
 
-  return <AcademyMyCourse mode={mode} courseData={data?.courses} tabContentList={tabContentList()} />
+
+  return <AcademyMyCourse mode={mode} courseData={data?.courses} />
 }
 
 export default MyCoursePage

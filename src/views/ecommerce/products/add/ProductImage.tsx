@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import { FC, useState } from 'react'
 
 // MUI Imports
 import Card from '@mui/material/Card'
@@ -45,7 +45,16 @@ const Dropzone = styled(AppReactDropzone)<BoxProps>(({ theme }) => ({
   }
 }))
 
-const ProductImage = () => {
+type Props = {
+  image: any;
+  setImage: (image: any) => void;
+};
+
+// const ProductImage = () => {
+const ProductImage: FC<Props> = ({
+  image,
+  setImage,
+}) => {
   // States
   const [files, setFiles] = useState<File[]>([])
 

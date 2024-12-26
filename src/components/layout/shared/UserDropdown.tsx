@@ -3,6 +3,7 @@
 // React Imports
 import { useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
+import { signOut } from "next-auth/react";
 
 // Next Imports
 import { useRouter } from 'next/navigation'
@@ -24,6 +25,7 @@ import Button from '@mui/material/Button'
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
 import { useLoadUserQuery } from '@/redux-store/features/api/apiSlice'
+import { useLogoutQuery } from '@/redux-store/features/auth/authApi';
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -44,6 +46,7 @@ const UserDropdown = () => {
 
   // Hooks
   const router = useRouter()
+  const [logout, setLogout] = useState(false);
 
   const { settings } = useSettings()
 
@@ -63,16 +66,24 @@ const UserDropdown = () => {
     setOpen(false)
   }
 
+  const {} = useLogoutQuery(undefined, {
+    skip: !logout ? true : false,
+  });
+
   const handleUserLogout = async () => {
     // Redirect to login page
-    router.push('/login')
+    // router.push('/login')
+    setLogout(true);
+    await signOut();
   }
 
   const {
-    data: userData,
+    data: user,
     isLoading,
     refetch,
   } = useLoadUserQuery(undefined, { refetchOnMountOrArgChange: true });
+
+  console.log(user)
 
   return (
     <>
@@ -85,8 +96,14 @@ const UserDropdown = () => {
       >
         <Avatar
           ref={anchorRef}
-          alt='John Doe'
-          src='/images/avatars/1.png'
+          alt={user?.message?.full_name ? 
+            user?.message?.full_name : 
+            'Guest'
+          }
+          src={user?.message?.user_image ? 
+            process.env.NEXT_PUBLIC_SERVER_URI + user?.message?.user_image : 
+            '/images/avatars/1.png'
+          }
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
         />
@@ -110,12 +127,29 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar alt='John Doe' src='/images/avatars/1.png' />
+                    <Avatar 
+                      alt={user?.message?.full_name ? 
+                        user?.message?.full_name : 
+                        'Guest'
+                      }
+                      src={user?.message?.user_image ? 
+                        process.env.NEXT_PUBLIC_SERVER_URI + user?.message?.user_image : 
+                        '/images/avatars/1.png'
+                      }
+                    />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        John Doe
+                        {user?.message?.full_name ? 
+                          user?.message?.full_name : 
+                          'Guest'
+                        }
                       </Typography>
-                      <Typography variant='caption'>admin@vuexy.com</Typography>
+                      <Typography variant='caption'>
+                        {user?.message?.username ? 
+                          user?.message?.username : 
+                          'Guest'
+                        }
+                      </Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
