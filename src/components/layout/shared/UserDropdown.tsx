@@ -83,8 +83,6 @@ const UserDropdown = () => {
     refetch,
   } = useLoadUserQuery(undefined, { refetchOnMountOrArgChange: true });
 
-  console.log(user)
-
   return (
     <>
       <Badge

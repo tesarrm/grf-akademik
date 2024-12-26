@@ -16,14 +16,55 @@ export const courseApi = apiSlice.injectEndpoints({
         credentials: "include" as const,
       }),
     }),
-    createCourse: builder.mutation({
-      query: (data) => ({
-        url: "create-course",
-        method: "POST",
-        body: data,
+    getAllCurrency: builder.query({
+      query: () => ({
+        url: "api/resource/Currency",
+        method: "GET",
         credentials: "include" as const,
       }),
     }),
+    // createCourse: builder.mutation({
+    //   query: (data) => ({
+    //     url: "create-course",
+    //     method: "POST",
+    //     body: data,
+    //     credentials: "include" as const,
+    //   }),
+    // }),
+    createCourse: builder.mutation({
+      query: (data) => ({
+        url: "api/method/frappe.client.insert",
+        method: "POST",
+        body: {
+          doc: {
+            doctype: "LMS Course", // Sama seperti di Vue
+            image: data.course_image?.file_name || "", // URL gambar
+            instructors: data.instructors.map((instructor: string) => ({
+              instructor,
+            })), // Pemetaan instruktur
+            ...data, // Data lain dari form atau input
+          }
+        },
+        credentials: "include", // Untuk mengirimkan cookies jika diperlukan
+      }),
+    }),
+    uploadImage: builder.mutation({
+      query: (formData: FormData) => ({
+        url: "api/method/upload_file",
+        method: "POST",
+        body: formData,
+        credentials: "include" as const,
+      }),
+    }),
+    removeImage: builder.mutation({
+      query: (fileId: string) => ({
+        url: `api/method/remove_file`, 
+        method: "POST",
+        body: { file_name: fileId },
+        credentials: "include" as const,
+      }),
+    }),
+
     getAllCourses: builder.query({
       query: () => ({
         url: "get-admin-courses",
@@ -120,7 +161,6 @@ export const courseApi = apiSlice.injectEndpoints({
 });
 
 export const {
-  useCreateCourseMutation,
   useGetAllCoursesQuery,
   useDeleteCourseMutation,
   useEditCourseMutation,
@@ -134,4 +174,8 @@ export const {
 
   useGetAllCategoryQuery,
   useGetAllUserQuery,
+  useGetAllCurrencyQuery,
+  useCreateCourseMutation,
+  useUploadImageMutation,
+  useRemoveImageMutation,
 } = courseApi;

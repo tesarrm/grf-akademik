@@ -147,6 +147,8 @@ const ProductInformation: FC<Props> = ({
   instructors,
   setInstructors,
 }) => {
+  //-----------------
+  // Editor
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -165,16 +167,8 @@ const ProductInformation: FC<Props> = ({
     },
   })
 
-  // const editor = useEditor({
-  //   extensions: [StarterKit],
-  //   content: courseInfo.description,
-  //   onUpdate: ({ editor }) => {
-  //     const updatedContent = editor.getHTML();
-  //     setCourseInfo({ ...courseInfo, description: updatedContent });
-  //   },
-  // });
-
-  //User
+  //-----------------
+  //Instructor
   const {
     data: user,
     isLoading: userIsLoading,
@@ -193,7 +187,6 @@ const ProductInformation: FC<Props> = ({
   // const [value, setValue] = useState<DataType[]>([...fixedOptions, top100Films[0]])
   const [value, setValue] = useState<DataType[]>([])
 
-  // Menyesuaikan nilai awal dengan instructors
   useEffect(() => {
     if (user?.data) {
       const initialSelected = user.data.filter((u:any) =>
@@ -203,11 +196,15 @@ const ProductInformation: FC<Props> = ({
     }
   }, [user, instructors]);
 
+  console.log(value)
+  console.log(instructors)
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setInformation((prev: any) => ({ ...prev, [name]: value }))
   }
 
+  //-----------------
   //Category
   const {
     data: category,
@@ -220,9 +217,6 @@ const ProductInformation: FC<Props> = ({
   const handleChangeCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedCategory(event.target.value);
   };
-
-  console.log(category)
-
 
   return (
     <Card>
@@ -281,7 +275,6 @@ const ProductInformation: FC<Props> = ({
             />
           </Grid>
           <Grid item xs={12}>
-            {/* <CustomTextField fullWidth label='Category' placeholder='' /> */}
             <CustomTextField 
               // select 
               // fullWidth 

@@ -1,8 +1,20 @@
 // MUI Imports
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { FC } from 'react';
 
-const ProductAddHeader = () => {
+type Props = {
+  handleCourseCreate: any;
+};
+
+// const ProductAddHeader = () => {
+const ProductAddHeader: FC<Props> = ({
+  handleCourseCreate,
+}) => {
+  const createCourse = () => {
+    handleCourseCreate();
+  };
+
   return (
     <div className='flex flex-wrap sm:items-center justify-between max-sm:flex-col gap-6'>
       <div>
@@ -16,7 +28,7 @@ const ProductAddHeader = () => {
           Discard
         </Button>
         <Button variant='tonal'>Save Draft</Button> */}
-        <Button variant='contained'>Save</Button>
+        <Button variant='contained' onClick={() => createCourse()}>Save</Button>
       </div>
     </div>
   )

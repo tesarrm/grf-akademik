@@ -1,5 +1,7 @@
 'use client'
 
+import { format } from 'date-fns';
+
 // MUI Imports
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
@@ -25,7 +27,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import '@/libs/styles/tiptapEditor.css'
 import { Checkbox, FormControlLabel, MenuItem } from '@mui/material'
 import CustomAutocomplete from '@/@core/components/mui/Autocomplete'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 // Data Imports
@@ -85,7 +87,9 @@ const ProductSetting: FC<Props> = ({
 
   // const [value, setValue] = useState<DataType[]>([...fixedOptions, top100Films[0]])
   const [value, setValue] = useState<DataType[]>([])
-  const [date, setDate] = useState<Date | null | undefined>(new Date())
+  // const [date, setDate] = useState<Date | null | undefined>(new Date())
+  const [date, setDate] = useState<Date | null | undefined>(null)
+
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
@@ -94,6 +98,20 @@ const ProductSetting: FC<Props> = ({
       [name]: checked,
     }));
   };
+
+  useEffect(() => {
+    if (date) {
+      setSetting({
+        ...setting,
+        published_on: format(date, 'yyyy-MM-dd'),
+      });
+    } else {
+      setSetting({
+        ...setting,
+        published_on: null,
+      });
+    }
+  }, [date]);
 
   return (
     <Card>
@@ -107,56 +125,66 @@ const ProductSetting: FC<Props> = ({
             <FormControlLabel label='Unchecked' control={<Checkbox name='basic-unchecked' />} />
             <FormControlLabel label='Unchecked' control={<Checkbox name='basic-unchecked' />} />
           </Grid> */}
-          <FormControlLabel
-            label="Published"
-            control={
-              <Checkbox
-                name="published"
-                checked={setting.published}
-                onChange={handleCheckboxChange}
-              />
-            }
-          />
-          <FormControlLabel
-            label="Upcoming"
-            control={
-              <Checkbox
-                name="upcoming"
-                checked={setting.upcoming}
-                onChange={handleCheckboxChange}
-              />
-            }
-          />
-          <FormControlLabel
-            label="Disable Self-Learning"
-            control={
-              <Checkbox
-                name="disable_self_learning"
-                checked={setting.disable_self_learning}
-                onChange={handleCheckboxChange}
-              />
-            }
-          />
-          <FormControlLabel
-            label="Featured"
-            control={
-              <Checkbox
-                name="featured"
-                checked={setting.featured}
-                onChange={handleCheckboxChange}
-              />
-            }
-          />
-          <FormControlLabel
-            label="Enable Certification"
-            control={
-              <Checkbox
-                name="enable_certification"
-                checked={setting.enable_certification}
-                onChange={handleCheckboxChange}
-              />
-            }
-          />
+          <Grid item xs={12} sm={6} md={4} lg={4}>
+            <FormControlLabel
+              label="Published"
+              control={
+                <Checkbox
+                  name="published"
+                  checked={setting.published}
+                  onChange={handleCheckboxChange}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={4}>
+            <FormControlLabel
+              label="Upcoming"
+              control={
+                <Checkbox
+                  name="upcoming"
+                  checked={setting.upcoming}
+                  onChange={handleCheckboxChange}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={4}>
+            <FormControlLabel
+              label="Disable Self-Learning"
+              control={
+                <Checkbox
+                  name="disable_self_learning"
+                  checked={setting.disable_self_learning}
+                  onChange={handleCheckboxChange}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={4}>
+            <FormControlLabel
+              label="Featured"
+              control={
+                <Checkbox
+                  name="featured"
+                  checked={setting.featured}
+                  onChange={handleCheckboxChange}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={4}>
+            <FormControlLabel
+              label="Enable Certification"
+              control={
+                <Checkbox
+                  name="enable_certification"
+                  checked={setting.enable_certification}
+                  onChange={handleCheckboxChange}
+                />
+              }
+            />
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <AppReactDatepicker

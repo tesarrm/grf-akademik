@@ -24,11 +24,15 @@ import CustomAvatar from '@core/components/mui/Avatar'
 
 // Styled Component Imports
 import AppReactDropzone from '@/libs/styles/AppReactDropzone'
+import { useRemoveImageMutation, useUploadImageMutation } from '@/redux-store/features/course/courseApi'
+import Box from '@mui/material/Box'
+import { Avatar } from '@mui/material'
 
 type FileProp = {
   name: string
   type: string
   size: number
+  fileId?: string
 }
 
 // Styled Dropzone Component
@@ -48,100 +52,224 @@ const Dropzone = styled(AppReactDropzone)<BoxProps>(({ theme }) => ({
 type Props = {
   image: any;
   setImage: (image: any) => void;
+  files: any;
+  setFiles: (files: any) => void;
 };
+
 
 // const ProductImage = () => {
 const ProductImage: FC<Props> = ({
   image,
   setImage,
+  files,
+  setFiles,
 }) => {
-  // States
-  const [files, setFiles] = useState<File[]>([])
+  // const [files, setFiles] = useState<File[]>([])
+
+  // // States
+  // // const [files, setFiles] = useState<File[]>([])
+
+  // // Hooks
+  // // const { getRootProps, getInputProps } = useDropzone({
+  // //   multiple: false,
+  // //   onDrop: (acceptedFiles: File[]) => {
+  // //     setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
+  // //   }
+  // // })
+
+  // const { getRootProps, getInputProps } = useDropzone({
+  //   multiple: false,
+  //   onDrop: async (acceptedFiles: File[]) => {
+  //     const file = acceptedFiles[0];
+  //     const formData = new FormData();
+  //     formData.append("file", file);
+
+  //     try {
+  //       const response = await uploadImage(formData).unwrap();
+  //       console.log(response)
+  //       const uploadedFile = {
+  //         name: file.name,
+  //         size: file.size,
+  //         type: file.type,
+  //         fileId: response?.message?.file_name, // Sesuaikan berdasarkan respons dari backend
+  //       };
+  //       setFiles([...files, uploadedFile]);
+  //     } catch (error) {
+  //       console.error("Error uploading file:", error);
+  //     }
+  //   },
+  // });
+
+  // const renderFilePreview = (file: FileProp) => {
+  //   // if (file.type.startsWith('image')) {
+  //   //   return <img width={38} height={38} alt={file.name} src={URL.createObjectURL(file as any)} />
+  //   // } else {
+  //     return <i className='tabler-file-description' />
+  //   // }
+  // }
+
+  // const handleRemoveFile = (file: FileProp) => {
+  //   console.log('halo')
+  //   const uploadedFiles = files
+  //   const filtered = uploadedFiles.filter((i: FileProp) => i.name !== file.name)
+
+  //   setFiles([...filtered])
+  // }
+
+  // // const handleRemoveFile = async (file: FileProp) => {
+  // //   console.log('halo')
+  // //   console.log(file)
+  // //   try {
+  // //     if (file.fileId) {
+  // //       await removeImage(file.fileId).unwrap();
+  // //       setFiles(files.filter((f:any) => f.fileId !== file.fileId));
+  // //     }
+  // //   } catch (error) {
+  // //     console.error("Error removing file:", error);
+  // //   }
+  // // };
+
+  // const fileList = files.map((file: FileProp) => (
+  //   <ListItem key={file.name} className='pis-4 plb-3'>
+  //     <div className='file-details'>
+  //       <div className='file-preview'>{renderFilePreview(file)}</div>
+  //       <div>
+  //         <Typography className='file-name font-medium' color='text.primary'>
+  //           {file.name}
+  //         </Typography>
+  //         <Typography className='file-size' variant='body2'>
+  //           {Math.round(file.size / 100) / 10 > 1000
+  //             ? `${(Math.round(file.size / 100) / 10000).toFixed(1)} mb`
+  //             : `${(Math.round(file.size / 100) / 10).toFixed(1)} kb`}
+  //         </Typography>
+  //       </div>
+  //     </div>
+  //     {/* <IconButton onClick={() => handleRemoveFile(file)}>
+  //       <i className='tabler-x text-xl' />
+  //     </IconButton> */}
+  //     <IconButton onClick={(event) => {
+  //       event.stopPropagation(); // Mencegah bubbling event
+  //       handleRemoveFile(file);
+  //     }}>
+  //       <i className='tabler-x text-xl' />
+  //     </IconButton>
+  //   </ListItem>
+  // ))
+
+  // const handleRemoveAllFiles = () => {
+  //   setFiles([])
+  // }
 
   // Hooks
   const { getRootProps, getInputProps } = useDropzone({
+    multiple: false,
+    accept: {
+      'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+    },
     onDrop: (acceptedFiles: File[]) => {
       setFiles(acceptedFiles.map((file: File) => Object.assign(file)))
     }
   })
 
-  const renderFilePreview = (file: FileProp) => {
-    if (file.type.startsWith('image')) {
-      return <img width={38} height={38} alt={file.name} src={URL.createObjectURL(file as any)} />
-    } else {
-      return <i className='tabler-file-description' />
-    }
-  }
+  // const { getRootProps, getInputProps } = useDropzone({
+  //   multiple: false,
+  //   onDrop: async (acceptedFiles: File[]) => {
+  //     const file = acceptedFiles[0];
+  //     const formData = new FormData();
+  //     formData.append("file", file);
 
-  const handleRemoveFile = (file: FileProp) => {
-    const uploadedFiles = files
-    const filtered = uploadedFiles.filter((i: FileProp) => i.name !== file.name)
+  //     try {
+  //       const response = await uploadImage(formData).unwrap();
+  //       console.log(response)
+  //       const uploadedFile = {
+  //         name: file.name,
+  //         size: file.size,
+  //         type: file.type,
+  //         fileId: response?.message?.file_name, // Sesuaikan berdasarkan respons dari backend
+  //       };
+  //       setFiles([...files, uploadedFile]);
+  //     } catch (error) {
+  //       console.error("Error uploading file:", error);
+  //     }
+  //   },
+  // });
 
-    setFiles([...filtered])
-  }
-
-  const fileList = files.map((file: FileProp) => (
-    <ListItem key={file.name} className='pis-4 plb-3'>
-      <div className='file-details'>
-        <div className='file-preview'>{renderFilePreview(file)}</div>
-        <div>
-          <Typography className='file-name font-medium' color='text.primary'>
-            {file.name}
-          </Typography>
-          <Typography className='file-size' variant='body2'>
-            {Math.round(file.size / 100) / 10 > 1000
-              ? `${(Math.round(file.size / 100) / 10000).toFixed(1)} mb`
-              : `${(Math.round(file.size / 100) / 10).toFixed(1)} kb`}
-          </Typography>
-        </div>
-      </div>
-      <IconButton onClick={() => handleRemoveFile(file)}>
-        <i className='tabler-x text-xl' />
-      </IconButton>
-    </ListItem>
+  const img = files.map((file: FileProp) => (
+    <img key={file.name} 
+      alt={file.name} 
+      className='single-file-image' 
+      src={URL.createObjectURL(file as any)} 
+    />
+    // console.log(file)
   ))
 
-  const handleRemoveAllFiles = () => {
-    setFiles([])
-  }
 
   return (
+    // <Dropzone>
+    //   <Card>
+    //     <CardHeader
+    //       title='Product Image'
+    //       action={
+    //         <Typography component={Link} color='primary' className='font-medium'>
+    //           Add media from URL
+    //         </Typography>
+    //       }
+    //       sx={{ '& .MuiCardHeader-action': { alignSelf: 'center' } }}
+    //     />
+    //     <CardContent>
+    //       <div {...getRootProps({ className: 'dropzone' })}>
+    //         <input {...getInputProps()} />
+    //         <div className='flex items-center flex-col gap-2 text-center'>
+    //           <CustomAvatar variant='rounded' skin='light' color='secondary'>
+    //             <i className='tabler-upload' />
+    //           </CustomAvatar>
+    //           <Typography variant='h4'>Drag and Drop Your Image Here.</Typography>
+    //           <Typography color='text.disabled'>or</Typography>
+    //           <Button variant='tonal' size='small'>
+    //             Browse Image
+    //           </Button>
+    //         </div>
+    //       </div>
+    //       {files.length ? (
+    //         <>
+    //           <List>{fileList}</List>
+    //           <div className='buttons'>
+    //             <Button color='error' variant='tonal' onClick={handleRemoveAllFiles}>
+    //               Remove All
+    //             </Button>
+    //             <Button variant='contained'>Upload Files</Button>
+    //           </div>
+    //         </>
+    //       ) : null}
+    //     </CardContent>
+    //   </Card>
+    // </Dropzone>
+
     <Dropzone>
       <Card>
-        <CardHeader
-          title='Product Image'
-          action={
-            <Typography component={Link} color='primary' className='font-medium'>
-              Add media from URL
-            </Typography>
-          }
-          sx={{ '& .MuiCardHeader-action': { alignSelf: 'center' } }}
-        />
         <CardContent>
-          <div {...getRootProps({ className: 'dropzone' })}>
+          <Box {...getRootProps({ className: 'dropzone' })} {...(files.length && { sx: { height: 450 } })}>
             <input {...getInputProps()} />
-            <div className='flex items-center flex-col gap-2 text-center'>
-              <CustomAvatar variant='rounded' skin='light' color='secondary'>
-                <i className='tabler-upload' />
-              </CustomAvatar>
-              <Typography variant='h4'>Drag and Drop Your Image Here.</Typography>
-              <Typography color='text.disabled'>or</Typography>
-              <Button variant='tonal' size='small'>
-                Browse Image
-              </Button>
-            </div>
-          </div>
-          {files.length ? (
-            <>
-              <List>{fileList}</List>
-              <div className='buttons'>
-                <Button color='error' variant='tonal' onClick={handleRemoveAllFiles}>
-                  Remove All
-                </Button>
-                <Button variant='contained'>Upload Files</Button>
+            {files.length ? (
+              img
+            ) : (
+              <div className='flex items-center flex-col'>
+                <Avatar variant='rounded' className='bs-12 is-12 mbe-9'>
+                  <i className='tabler-upload' />
+                </Avatar>
+                <Typography variant='h4' className='mbe-2.5'>
+                  Drop files here or click to upload.
+                </Typography>
+                <Typography>
+                  Drop files here or click{' '}
+                  <a href='/' onClick={e => e.preventDefault()} className='text-textPrimary no-underline'>
+                    browse
+                  </a>{' '}
+                  thorough your machine
+                </Typography>
               </div>
-            </>
-          ) : null}
+            )}
+          </Box>
         </CardContent>
       </Card>
     </Dropzone>

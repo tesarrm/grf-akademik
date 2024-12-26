@@ -77,8 +77,6 @@ const AcademyMyCourse = ({ courseData, mode }: Props) => {
     refetch,
   } = useLoadUserQuery(undefined, { refetchOnMountOrArgChange: true });
 
-  console.log(user);
-
   // Tab
   // const [tabs, setTabs] = useState<string[]>([]);
 
@@ -134,7 +132,7 @@ const AcademyMyCourse = ({ courseData, mode }: Props) => {
         },
       ]);
     },
-    // [courses]
+    []
   );
 
   useEffect(() => {
@@ -180,8 +178,6 @@ const AcademyMyCourse = ({ courseData, mode }: Props) => {
 
     initializeTabs();
   }, [user]);
-
-  console.log(tabs);
 
   // Vars
   const tabContentList = (): { [key: string]: ReactElement } => ({
