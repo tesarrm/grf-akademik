@@ -149,6 +149,7 @@ const ProductInformation: FC<Props> = ({
 }) => {
   //-----------------
   // Editor
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -167,6 +168,12 @@ const ProductInformation: FC<Props> = ({
     },
   })
 
+  useEffect(() => {
+    if (editor && information.description) {
+      editor.commands.setContent(information.description);
+    }
+  }, [information.description, editor]);
+
   //-----------------
   //Instructor
   const {
@@ -184,20 +191,22 @@ const ProductInformation: FC<Props> = ({
     }
   })
 
-  // const [value, setValue] = useState<DataType[]>([...fixedOptions, top100Films[0]])
-  const [value, setValue] = useState<DataType[]>([])
+  // const [value, setValue] = useState<DataType[]>([])
 
-  useEffect(() => {
-    if (user?.data) {
-      const initialSelected = user.data.filter((u:any) =>
-        instructors.includes(u.name)
-      );
-      setValue(initialSelected);
-    }
-  }, [user, instructors]);
+  // useEffect(() => {
+  //   if (user?.data) {
+  //     const initialSelected = user.data.filter((u:any) =>
+  //       instructors.some((instructorObj:any) => instructorObj.instructor === u.name)
+  //     );
+  //     setValue(initialSelected);
+  //   }
+  // }, [user, instructors]);
 
-  console.log(value)
   console.log(instructors)
+
+  // useEffect(() => {
+  //   setInstructors(value)
+  // }, [value]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -212,11 +221,15 @@ const ProductInformation: FC<Props> = ({
     refetch: categoryRefetch,
   } = useGetAllCategoryQuery({});
 
-  const [selectedCategory, setSelectedCategory] = useState<string>(information.category || '');
+  // const [selectedCategory, setSelectedCategory] = useState<string>(information.category || '');
 
-  const handleChangeCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedCategory(event.target.value);
-  };
+  // const handleChangeCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setInformation({
+  //     category: event.target.value,
+  //     ...information
+  //   });
+  //   console.log(event.target.value)
+  // };
 
   return (
     <Card>
@@ -224,7 +237,6 @@ const ProductInformation: FC<Props> = ({
       <CardContent>
         <Grid container spacing={6} className='mbe-6'>
           <Grid item xs={12}>
-            {/* <CustomTextField fullWidth label='Title' placeholder='' /> */}
             <CustomTextField
               fullWidth
               label="Title"
@@ -285,16 +297,11 @@ const ProductInformation: FC<Props> = ({
               fullWidth
               label="Category"
               id="custom-select"
-              value={selectedCategory}
-              onChange={handleChangeCategory}
+              name="category"
+              value={information.category}
+              onChange={handleInputChange}
               variant="outlined"
             >
-              {/* <MenuItem value=''>
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem> */}
               <MenuItem value=''>
                 <em>None</em>
               </MenuItem>
@@ -313,35 +320,15 @@ const ProductInformation: FC<Props> = ({
           </Grid>
           <Grid item xs={12}>
             <CustomAutocomplete
-              // multiple
-              // id='autocomplete-grouped'
-              // groupBy={option => option.firstLetter}
-              // getOptionLabel={option => option.title || ''}
-              // renderInput={params => <CustomTextField {...params} label='With categories' />}
-              // options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
-              // onChange={(event, newValue) => {
-              //   setValue([...fixedOptions, ...newValue.filter(option => fixedOptions.indexOf(option) === -1)])
-              // }}
               multiple
-              value={value}
+              value={instructors}
               options={user ? user.data : [{}]}
               id='autocomplete-fixed-option'
-              getOptionLabel={option => option?.name || ''}
+              getOptionLabel={option => option?.instructor || ''}
               renderInput={params => <CustomTextField {...params} label='Instructors' placeholder='' />}
               onChange={(event, newValue) => {
-                setValue([...newValue])
+                setInstructors([...newValue])
               }}
-              // renderTags={(tagValue, getTagProps) =>
-              //   tagValue.map((option, index) => (
-              //     <Chip
-              //       label={option.title}
-              //       {...(getTagProps({ index }) as {})}
-              //       disabled={fixedOptions.indexOf(option) !== -1}
-              //       key={index}
-              //       size='small'
-              //     />
-              //   ))
-              // }
             />
           </Grid>
         </Grid>

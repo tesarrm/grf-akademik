@@ -15,6 +15,7 @@ const ProductAddHeader: FC<Props> = ({
     handleCourseCreate();
   };
 
+
   return (
     <div className='flex flex-wrap sm:items-center justify-between max-sm:flex-col gap-6'>
       <div>

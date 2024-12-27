@@ -31,23 +31,23 @@ export const courseApi = apiSlice.injectEndpoints({
     //     credentials: "include" as const,
     //   }),
     // }),
-    createCourse: builder.mutation({
-      query: (data) => ({
-        url: "api/method/frappe.client.insert",
-        method: "POST",
-        body: {
-          doc: {
-            doctype: "LMS Course", // Sama seperti di Vue
-            image: data.course_image?.file_name || "", // URL gambar
-            instructors: data.instructors.map((instructor: string) => ({
-              instructor,
-            })), // Pemetaan instruktur
-            ...data, // Data lain dari form atau input
-          }
-        },
-        credentials: "include", // Untuk mengirimkan cookies jika diperlukan
-      }),
-    }),
+    // createCourse: builder.mutation({
+    //   query: (data) => ({
+    //     url: "api/method/frappe.client.insert",
+    //     method: "POST",
+    //     body: {
+    //       doc: {
+    //         doctype: "LMS Course", // Sama seperti di Vue
+    //         image: data.course_image?.file_name || "", // URL gambar
+    //         instructors: data.instructors.map((instructor: string) => ({
+    //           instructor,
+    //         })), // Pemetaan instruktur
+    //         ...data, // Data lain dari form atau input
+    //       }
+    //     },
+    //     credentials: "include", // Untuk mengirimkan cookies jika diperlukan
+    //   }),
+    // }),
     uploadImage: builder.mutation({
       query: (formData: FormData) => ({
         url: "api/method/upload_file",
@@ -62,6 +62,62 @@ export const courseApi = apiSlice.injectEndpoints({
         method: "POST",
         body: { file_name: fileId },
         credentials: "include" as const,
+      }),
+    }),
+    getCourse: builder.query({
+      query: (id) => ({
+        url: "api/method/frappe.client.get",
+        method: "POST",
+        body: {
+          doctype: "LMS Course", 
+          name: id 
+        },
+        credentials: "include" as const,
+      }),
+    }),
+    // editCourse: builder.mutation({
+    //   query: ({ courseId, data }) => ({
+    //     url: `api/method/frappe.client.set_value`,
+    //     method: "POST",
+    //     body: {
+    //       doctype: "LMS Course",
+    //       name: courseId, // ID kursus yang akan diedit
+    //       fieldname: {
+    //         image: data.course_image?.file_url || "",
+    //         instructors: data.instructors.map((instructor: string) => ({
+    //           instructor,
+    //         })), // Pemetaan instruktur
+    //         ...data, // Data lainnya
+    //       },
+    //     },
+    //     credentials: "include",
+    //   }),
+    // }),
+    createCourse: builder.mutation({
+      query: (data) => ({
+        url: "api/method/frappe.client.insert",
+        method: "POST",
+        body: {
+          doc: {
+            doctype: "LMS Course",
+            ...data,
+          },
+        },
+        credentials: "include",
+      }),
+    }),
+    editCourse: builder.mutation({
+      query: ({ courseId, data }) => ({
+        url: `api/method/frappe.client.set_value`,
+        method: "POST",
+        body: {
+          doctype: "LMS Course",
+          name: courseId,
+          fieldname: {
+            ...data,
+          },
+        },
+        credentials: "include",
       }),
     }),
 
@@ -80,14 +136,14 @@ export const courseApi = apiSlice.injectEndpoints({
         credentials: "include" as const,
       }),
     }),
-    editCourse: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `edit-course/${id}`,
-        method: "PUT",
-        body: data,
-        credentials: "include" as const,
-      }),
-    }),
+    // editCourse: builder.mutation({
+    //   query: ({ id, data }) => ({
+    //     url: `edit-course/${id}`,
+    //     method: "PUT",
+    //     body: data,
+    //     credentials: "include" as const,
+    //   }),
+    // }),
     getUsersAllCourses: builder.query({
       query: () => ({
         url: "get-courses",
@@ -163,7 +219,6 @@ export const courseApi = apiSlice.injectEndpoints({
 export const {
   useGetAllCoursesQuery,
   useDeleteCourseMutation,
-  useEditCourseMutation,
   useGetUsersAllCoursesQuery,
   useGetCourseDetailsQuery,
   useGetCourseContentQuery,
@@ -178,4 +233,6 @@ export const {
   useCreateCourseMutation,
   useUploadImageMutation,
   useRemoveImageMutation,
+  useGetCourseQuery,
+  useEditCourseMutation,
 } = courseApi;

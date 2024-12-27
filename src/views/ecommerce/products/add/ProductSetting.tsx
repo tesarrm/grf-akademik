@@ -27,7 +27,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import '@/libs/styles/tiptapEditor.css'
 import { Checkbox, FormControlLabel, MenuItem } from '@mui/material'
 import CustomAutocomplete from '@/@core/components/mui/Autocomplete'
-import { FC, useEffect, useState } from 'react'
+import { ChangeEvent, FC, useEffect, useState } from 'react'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 // Data Imports
@@ -118,13 +118,6 @@ const ProductSetting: FC<Props> = ({
       <CardHeader title='Settings' />
       <CardContent>
         <Grid container spacing={6} className='mbe-6'>
-          {/* <Grid item xs={12}>
-            <FormControlLabel label='Checked' control={<Checkbox defaultChecked name='basic-checked' />} />
-            <FormControlLabel label='Unchecked' control={<Checkbox name='basic-unchecked' />} />
-            <FormControlLabel label='Unchecked' control={<Checkbox name='basic-unchecked' />} />
-            <FormControlLabel label='Unchecked' control={<Checkbox name='basic-unchecked' />} />
-            <FormControlLabel label='Unchecked' control={<Checkbox name='basic-unchecked' />} />
-          </Grid> */}
           <Grid item xs={12} sm={6} md={4} lg={4}>
             <FormControlLabel
               label="Published"
@@ -190,6 +183,7 @@ const ProductSetting: FC<Props> = ({
           <AppReactDatepicker
             selected={date}
             id='basic-input'
+            value={setting.published_on}
             onChange={(date: Date | null) => setDate(date)}
             placeholderText='Click to select a date'
             customInput={<CustomTextField label='Public On' fullWidth />}
