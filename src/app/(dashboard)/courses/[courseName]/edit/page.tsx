@@ -14,6 +14,10 @@ import ProductSetting from '@/views/ecommerce/products/add/ProductSetting'
 import { useEffect, useState } from 'react'
 import { useCreateCourseMutation, useEditCourseMutation, useGetCourseQuery, useRemoveImageMutation, useUploadImageMutation } from '@/redux-store/features/course/courseApi'
 import { useParams, useRouter } from "next/navigation";
+import Router from 'next/router';
+import ChapterOutline from '@/views/ecommerce/products/add/ChapterOutline'
+import ChapterOutline2 from '@/views/ecommerce/products/add/ChapterOutline2'
+
 
 // const eCommerceProductsAdd = () => {
 const eCommerceProductsAdd: React.FC = () => {
@@ -24,48 +28,10 @@ const eCommerceProductsAdd: React.FC = () => {
   const [editCourse, { isLoading: isUpdating }] = useEditCourseMutation();
 
   // const [createCourse, { isLoading, isSuccess, error }] =
-  //   useCreateCourseMutation();
 
   // untuk tumbhnail sementara disimpan di files dulu saja
   // jika sudah submit baru di simpan di image
   const [files, setFiles] = useState<File[]>([])
-
-  // const [image, setImage] = useState({
-  //     // course_image: {
-  //         file_name: "Group 2 (1).png",
-  //         file_size: 47171,
-  //         // file_url: "/files/Group 2 (1).png"
-  //     // }
-  // })
-
-  // const [information, setInformation] = useState({
-  //     title: "Ducimus expedita ea",
-  //     short_introduction: "Ut impedit minima v",
-  //     description: "<p>Tempor deleniti earu.</p>",
-  //     video_link: "Aliquam quis delectu",
-  //     tags: "",
-  //     category: "Education",
-  // })
-
-  // const [instructors, setInstructors] = useState([{
-  //     instructors:" kocengdrawing@gmail.com"
-  // }])
-
-  // const [setting, setSetting] = useState({
-  //     published: true,
-  //     upcoming: false,
-  //     disable_self_learning: false,
-  //     featured: false,
-  //     enable_certification: false,
-  //     published_on: null,
-  // })
-
-  // const [pricing, setPricing] = useState({
-  //     paid_course: true,
-  //     course_price: 0,
-  //     currency: "AUD",
-  // })
-
 
   // State untuk setiap form section
   const [image, setImage] = useState({
@@ -103,9 +69,6 @@ const eCommerceProductsAdd: React.FC = () => {
     currency: '',
   });
 
-  console.log(information)
-  console.log(instructors)
-
   //Router
   // Ambil parameter dari URL
   const params = useParams();
@@ -124,7 +87,6 @@ const eCommerceProductsAdd: React.FC = () => {
   useEffect(() => {
     if (courseData?.message) {
       const course = courseData.message;
-      console.log(course)
 
       // Update state sesuai data kursus
       setImage({
@@ -164,8 +126,6 @@ const eCommerceProductsAdd: React.FC = () => {
       });
     }
   }, [courseData]);
-
-
 
 
   //Router
@@ -222,63 +182,6 @@ const eCommerceProductsAdd: React.FC = () => {
     };
   }, []); 
 
-  //Edit
-  // const {
-  //   data: course,
-  //   isLoading: courseIsLoading,
-  //   refetch: courseRefetch,
-  // } = useGetCourseQuery(params.courseName);
-
-  //Submit
-  // const handleCourseCreateUpdate = async (e: any) => {
-
-  //   try {
-  //     if (files.length !== 0 ) {
-  //       const file = files[0];
-  //       const formData = new FormData();
-
-  //       formData.append("file", file);
-  //       // Unggah file terlebih dahulu
-  //       const uploadedFile = await uploadImage(formData).unwrap();
-  //       // console.log("Uploaded file response:", uploadedFile);
-
-  //       setImage({
-  //         file_name: uploadedFile.file_name || files[0].name,
-  //         file_size: uploadedFile.file_size || files[0].size,
-  //         file_url: uploadedFile.file_url || uploadedFile.url, 
-  //       });
-  //     }
-
-  //     const data = {
-  //       course_image: image,
-  //       title: information.title,
-  //       short_introduction: information.short_introduction,
-  //       description: information.description,
-  //       video_link: information.video_link,
-  //       tags: information.tags,
-  //       category: information.category,
-  //       instructors: instructors,
-  //       published: setting.published,
-  //       upcoming: setting.upcoming,
-  //       disable_self_learning: setting.disable_self_learning,
-  //       featured: setting.featured,
-  //       enable_certification: setting.enable_certification,
-  //       published_on: setting.published_on,
-  //       paid_course: pricing.paid_course,
-  //       course_price: pricing.course_price,
-  //       currency: pricing.currency,
-  //     };
-
-  //     // Kirim data setelah file diunggah
-  //     if (!isLoading) {
-  //       await createCourse(data);
-  //       // console.log("Course created successfully");
-  //     }
-  //   } catch (error) {
-  //     // console.error("Error creating course:", error);
-  //   }
-  // };
-
 
   const handleSubmit = async () => {
     const courseId = params.courseName || null; // Ambil ID kursus jika ada
@@ -304,8 +207,6 @@ const eCommerceProductsAdd: React.FC = () => {
     await handleCourseCreateUpdate(courseId, files, formData);
   };
 
-
-
   const handleCourseCreateUpdate = async (courseId: any | null, files: File[], formData: any) => {
     try {
       let imageFile = null; 
@@ -317,33 +218,29 @@ const eCommerceProductsAdd: React.FC = () => {
         formDataFile.append("file", file);
         const uploadedFile = await uploadImage(formDataFile).unwrap();
 
-        // image = {
-        //   file_name: uploadedFile.message.file_name || files[0].name,
-        //   file_size: uploadedFile.message.file_size || files[0].size,
-        //   file_url: uploadedFile.message.file_url || uploadedFile.message.url, 
-        // };
-
         imageFile = uploadedFile.message;
-      } else {
-
-      }
+      } 
 
       const data = {
         image: imageFile?.file_url || image?.file_url,
         course_image: image,
-        ...formData, // Data lainnya dari form
+        ...formData, 
       };
-
-      console.log(data)
 
       // Tentukan apakah akan create atau update
       if (courseId !== "new") {
         await editCourse({ courseId, data }).unwrap();
-        alert("Course updated successfully!");
+        // alert("Course updated successfully!");
       } else {
-        // await createCourse(data).unwrap();
-        await createCourse(data);
-        alert("Course created successfully!");
+        const response = await createCourse(data).unwrap();
+        // alert("Course created successfully!");
+        // const newCourseId = response?.name;
+        const newCourseId = response?.message?.name
+
+        router.push(`/courses/${newCourseId}/edit`);
+        // Router.push(`/courses/${courseId}/edit`);
+        // console.log(courseId)
+        // window.location.href = `/courses/${courseId}/edit`;
       }
     } catch (error) {
       console.error("Error handling course:", error);
@@ -389,6 +286,10 @@ const eCommerceProductsAdd: React.FC = () => {
             />
           </Grid>
         </Grid>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <ChapterOutline2 />
+        {/* <ChapterOutline /> */}
       </Grid>
     </Grid>
   )

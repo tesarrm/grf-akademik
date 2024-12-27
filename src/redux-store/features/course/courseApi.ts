@@ -120,6 +120,65 @@ export const courseApi = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    // createChapter: builder.mutation({
+    //   query: ({chapter, course}) => ({
+    //     url: "api/method/frappe.client.insert",
+    //     method: "POST",
+    //     body: {
+    //       doc: {
+    //         doctype: 'Chapter Reference',
+    //         chapter: chapter.title,
+    //         parent: course,
+    //         parenttype: 'LMS Course',
+    //         parentfield: 'chapters',
+    //       },
+    //     },
+    //     credentials: "include",
+    //   }),
+    // }),
+    upsertChapter: builder.mutation({
+      query: ({ chapter, course, name }: any) => ({
+        url: 'api/method/lms.lms.api.upsert_chapter',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: {
+          title: chapter.title,
+          course,
+          is_scorm_package: chapter.is_scorm_package || false,
+          scorm_package: chapter.scorm_package || null,
+          name, // Only passed for updates
+        },
+        credentials: "include",
+      }),
+    }),
+    insertChapterReference: builder.mutation({
+      query: ({ chapterName, course }: any) => ({
+        url: 'api/method/frappe.client.insert',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: {
+          doc: {
+            doctype: 'Chapter Reference',
+            chapter: chapterName,
+            parent: course,
+            parenttype: 'LMS Course',
+            parentfield: 'chapters',
+          },
+        },
+        credentials: "include",
+      }),
+    }),
+    getCourseOutline: builder.query<any, { courseName: any; getProgress: boolean }>({
+      query: ({ courseName, getProgress }) => ({
+        url: 'api/method/lms.lms.utils.get_course_outline',
+        method: 'POST',
+        body: {
+          course: courseName,
+          progress: getProgress,
+        },
+        credentials: "include",
+      }),
+    }),
 
     getAllCourses: builder.query({
       query: () => ({
@@ -235,4 +294,7 @@ export const {
   useRemoveImageMutation,
   useGetCourseQuery,
   useEditCourseMutation,
+  useUpsertChapterMutation,
+  useInsertChapterReferenceMutation,
+  useGetCourseOutlineQuery,
 } = courseApi;

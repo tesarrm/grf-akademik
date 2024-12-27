@@ -191,18 +191,19 @@ const ProductInformation: FC<Props> = ({
     }
   })
 
-  // const [value, setValue] = useState<DataType[]>([])
+  const [value, setValue] = useState<DataType[]>([])
 
-  // useEffect(() => {
+  useEffect(() => {
   //   if (user?.data) {
   //     const initialSelected = user.data.filter((u:any) =>
   //       instructors.some((instructorObj:any) => instructorObj.instructor === u.name)
   //     );
   //     setValue(initialSelected);
   //   }
-  // }, [user, instructors]);
-
-  console.log(instructors)
+    setValue(user?.data?.map((u:any) => ({
+      instructor: u.name
+    })));
+  }, [user]);
 
   // useEffect(() => {
   //   setInstructors(value)
@@ -322,7 +323,7 @@ const ProductInformation: FC<Props> = ({
             <CustomAutocomplete
               multiple
               value={instructors}
-              options={user ? user.data : [{}]}
+              options={value ? value: [{}]}
               id='autocomplete-fixed-option'
               getOptionLabel={option => option?.instructor || ''}
               renderInput={params => <CustomTextField {...params} label='Instructors' placeholder='' />}
