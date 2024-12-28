@@ -1,27 +1,27 @@
-import { apiSlice } from "../api/apiSlice";
+import { apiSlice } from '../api/apiSlice'
 
 export const courseApi = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getAllCategory: builder.query({
       query: () => ({
-        url: "api/resource/LMS Category",
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        url: 'api/resource/LMS Category',
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     getAllUser: builder.query({
       query: () => ({
-        url: "api/resource/User",
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        url: 'api/resource/User',
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     getAllCurrency: builder.query({
       query: () => ({
-        url: "api/resource/Currency",
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        url: 'api/resource/Currency',
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     // createCourse: builder.mutation({
     //   query: (data) => ({
@@ -50,92 +50,58 @@ export const courseApi = apiSlice.injectEndpoints({
     // }),
     uploadImage: builder.mutation({
       query: (formData: FormData) => ({
-        url: "api/method/upload_file",
-        method: "POST",
+        url: 'api/method/upload_file',
+        method: 'POST',
         body: formData,
-        credentials: "include" as const,
-      }),
+        credentials: 'include' as const
+      })
     }),
     removeImage: builder.mutation({
       query: (fileId: string) => ({
-        url: `api/method/remove_file`, 
-        method: "POST",
+        url: `api/method/remove_file`,
+        method: 'POST',
         body: { file_name: fileId },
-        credentials: "include" as const,
-      }),
+        credentials: 'include' as const
+      })
     }),
     getCourse: builder.query({
-      query: (id) => ({
-        url: "api/method/frappe.client.get",
-        method: "POST",
+      query: id => ({
+        url: 'api/method/frappe.client.get',
+        method: 'POST',
         body: {
-          doctype: "LMS Course", 
-          name: id 
+          doctype: 'LMS Course',
+          name: id
         },
-        credentials: "include" as const,
-      }),
+        credentials: 'include' as const
+      })
     }),
-    // editCourse: builder.mutation({
-    //   query: ({ courseId, data }) => ({
-    //     url: `api/method/frappe.client.set_value`,
-    //     method: "POST",
-    //     body: {
-    //       doctype: "LMS Course",
-    //       name: courseId, // ID kursus yang akan diedit
-    //       fieldname: {
-    //         image: data.course_image?.file_url || "",
-    //         instructors: data.instructors.map((instructor: string) => ({
-    //           instructor,
-    //         })), // Pemetaan instruktur
-    //         ...data, // Data lainnya
-    //       },
-    //     },
-    //     credentials: "include",
-    //   }),
-    // }),
     createCourse: builder.mutation({
-      query: (data) => ({
-        url: "api/method/frappe.client.insert",
-        method: "POST",
+      query: data => ({
+        url: 'api/method/frappe.client.insert',
+        method: 'POST',
         body: {
           doc: {
-            doctype: "LMS Course",
-            ...data,
-          },
+            doctype: 'LMS Course',
+            ...data
+          }
         },
-        credentials: "include",
-      }),
+        credentials: 'include'
+      })
     }),
     editCourse: builder.mutation({
       query: ({ courseId, data }) => ({
         url: `api/method/frappe.client.set_value`,
-        method: "POST",
+        method: 'POST',
         body: {
-          doctype: "LMS Course",
+          doctype: 'LMS Course',
           name: courseId,
           fieldname: {
-            ...data,
-          },
+            ...data
+          }
         },
-        credentials: "include",
-      }),
+        credentials: 'include'
+      })
     }),
-    // createChapter: builder.mutation({
-    //   query: ({chapter, course}) => ({
-    //     url: "api/method/frappe.client.insert",
-    //     method: "POST",
-    //     body: {
-    //       doc: {
-    //         doctype: 'Chapter Reference',
-    //         chapter: chapter.title,
-    //         parent: course,
-    //         parenttype: 'LMS Course',
-    //         parentfield: 'chapters',
-    //       },
-    //     },
-    //     credentials: "include",
-    //   }),
-    // }),
     upsertChapter: builder.mutation({
       query: ({ chapter, course, name }: any) => ({
         url: 'api/method/lms.lms.api.upsert_chapter',
@@ -146,10 +112,10 @@ export const courseApi = apiSlice.injectEndpoints({
           course,
           is_scorm_package: chapter.is_scorm_package || false,
           scorm_package: chapter.scorm_package || null,
-          name, // Only passed for updates
+          name
         },
-        credentials: "include",
-      }),
+        credentials: 'include'
+      })
     }),
     insertChapterReference: builder.mutation({
       query: ({ chapterName, course }: any) => ({
@@ -162,11 +128,11 @@ export const courseApi = apiSlice.injectEndpoints({
             chapter: chapterName,
             parent: course,
             parenttype: 'LMS Course',
-            parentfield: 'chapters',
-          },
+            parentfield: 'chapters'
+          }
         },
-        credentials: "include",
-      }),
+        credentials: 'include'
+      })
     }),
     getCourseOutline: builder.query<any, { courseName: any; getProgress: boolean }>({
       query: ({ courseName, getProgress }) => ({
@@ -174,26 +140,36 @@ export const courseApi = apiSlice.injectEndpoints({
         method: 'POST',
         body: {
           course: courseName,
-          progress: getProgress,
+          progress: getProgress
         },
-        credentials: "include",
-      }),
+        credentials: 'include'
+      })
+    }),
+    deleteChapter: builder.mutation({
+      query: chapter => ({
+        url: 'api/method/lms.lms.api.delete_chapter',
+        method: 'POST',
+        body: {
+          chapter: chapter
+        },
+        credentials: 'include'
+      })
     }),
 
     getAllCourses: builder.query({
       query: () => ({
-        url: "get-admin-courses",
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        url: 'get-admin-courses',
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     deleteCourse: builder.mutation({
-      query: (id) => ({
-        url: "delete-course",
-        method: "DELETE",
+      query: id => ({
+        url: 'delete-course',
+        method: 'DELETE',
         body: { id },
-        credentials: "include" as const,
-      }),
+        credentials: 'include' as const
+      })
     }),
     // editCourse: builder.mutation({
     //   query: ({ id, data }) => ({
@@ -205,60 +181,60 @@ export const courseApi = apiSlice.injectEndpoints({
     // }),
     getUsersAllCourses: builder.query({
       query: () => ({
-        url: "get-courses",
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        url: 'get-courses',
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     getCourseDetails: builder.query({
-      query: (id) => ({
+      query: id => ({
         url: `get-course/${id}`,
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     getCourseContent: builder.query({
-      query: (id) => ({
+      query: id => ({
         url: `get-course-content/${id}`,
-        method: "GET",
-        credentials: "include" as const,
-      }),
+        method: 'GET',
+        credentials: 'include' as const
+      })
     }),
     addNewQuestion: builder.mutation({
       query: ({ question, courseId, contentId }) => ({
-        url: "add-question",
+        url: 'add-question',
         body: {
           question,
           courseId,
-          contentId,
+          contentId
         },
-        method: "PUT",
-        credentials: "include" as const,
-      }),
+        method: 'PUT',
+        credentials: 'include' as const
+      })
     }),
     addAnwerInQuestion: builder.mutation({
       query: ({ answer, courseId, contentId, questionId }) => ({
-        url: "add-answer",
+        url: 'add-answer',
         body: {
           answer,
           courseId,
           contentId,
-          questionId,
+          questionId
         },
-        method: "PUT",
-        credentials: "include" as const,
-      }),
+        method: 'PUT',
+        credentials: 'include' as const
+      })
     }),
     addReviewInCourse: builder.mutation({
       query: ({ review, rating, courseId }) => ({
         url: `add-review/${courseId}`,
         body: {
           review,
-          rating,
+          rating
         },
-        method: "PUT",
-        credentials: "include" as const,
-      }),
+        method: 'PUT',
+        credentials: 'include' as const
+      })
     }),
     addReplyInReview: builder.mutation({
       query: ({ comment, reviewId, courseId }) => ({
@@ -266,14 +242,14 @@ export const courseApi = apiSlice.injectEndpoints({
         body: {
           comment,
           reviewId,
-          courseId,
+          courseId
         },
-        method: "PUT",
-        credentials: "include" as const,
-      }),
-    }),
-  }),
-});
+        method: 'PUT',
+        credentials: 'include' as const
+      })
+    })
+  })
+})
 
 export const {
   useGetAllCoursesQuery,
@@ -297,4 +273,5 @@ export const {
   useUpsertChapterMutation,
   useInsertChapterReferenceMutation,
   useGetCourseOutlineQuery,
-} = courseApi;
+  useDeleteChapterMutation
+} = courseApi

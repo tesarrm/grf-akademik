@@ -1,93 +1,171 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
-//   Typography,
+  //   Typography,
   IconButton,
   Tooltip,
-//   Accordion,
-//   AccordionSummary,
-//   AccordionDetails,
+  //   Accordion,
+  //   AccordionSummary,
+  //   AccordionDetails,
   List,
   ListItem,
-  ListItemText,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import DescriptionIcon from '@mui/icons-material/Description';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+  ListItemText
+} from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import DescriptionIcon from '@mui/icons-material/Description'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
+import MuiAccordion from '@mui/material/Accordion'
+import MuiAccordionSummary from '@mui/material/AccordionSummary'
+import MuiAccordionDetails from '@mui/material/AccordionDetails'
 import Typography from '@mui/material/Typography'
-import ChapterDialog from './ChapterDialog';
+import ChapterDialog from './ChapterDialog'
 
-import { useParams, useRouter } from "next/navigation";
-import { useGetCourseOutlineQuery } from '@/redux-store/features/course/courseApi';
+import { useParams, useRouter } from 'next/navigation'
+import { useDeleteChapterMutation, useGetCourseOutlineQuery } from '@/redux-store/features/course/courseApi'
+import useChapterResources from './Custom'
 
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+
+import { styled } from '@mui/material/styles'
+import type { AccordionProps } from '@mui/material/Accordion'
+import type { AccordionSummaryProps } from '@mui/material/AccordionSummary'
+import type { AccordionDetailsProps } from '@mui/material/AccordionDetails'
+
+// const Accordion = styled(MuiAccordion)<AccordionProps>({
+//   margin: '0 !important',
+//   borderRadius: 0,
+//   boxShadow: 'none !important',
+//   //   border: '1px solid var(--mui-palette-divider)',
+//   '&:not(:last-of-type)': {
+//     borderBottom: 0
+//   },
+//   '&:before': {
+//     display: 'none'
+//   },
+//   '&:first-of-type': {
+//     '& .MuiButtonBase-root': {
+//       borderTopLeftRadius: 'var(--mui-shape-borderRadius)',
+//       borderTopRightRadius: 'var(--mui-shape-borderRadius)'
+//     }
+//   },
+//   '&:last-of-type': {
+//     '& .MuiAccordionSummary-root:not(.Mui-expanded)': {
+//       borderBottomLeftRadius: 'var(--mui-shape-borderRadius)',
+//       borderBottomRightRadius: 'var(--mui-shape-borderRadius)'
+//     }
+//   }
+// })
+
+export const Accordion = styled(MuiAccordion)<AccordionProps>({
+  margin: '0 !important',
+  boxShadow: 'none !important',
+  border: '1px solid var(--mui-palette-divider) !important',
+  borderRadius: '0 !important',
+  overflow: 'hidden',
+  background: 'none',
+  '&:not(:last-of-type)': {
+    borderBottom: '0 !important'
+  },
+  '&:before': {
+    display: 'none'
+  },
+  '&:first-of-type': {
+    borderTopLeftRadius: 'var(--mui-shape-borderRadius) !important',
+    borderTopRightRadius: 'var(--mui-shape-borderRadius) !important'
+  },
+  '&:last-of-type': {
+    borderBottomLeftRadius: 'var(--mui-shape-borderRadius) !important',
+    borderBottomRightRadius: 'var(--mui-shape-borderRadius) !important'
+  }
+})
+
+// Styled component for AccordionSummary component
+export const AccordionSummary = styled(MuiAccordionSummary)<AccordionSummaryProps>(({ theme }) => ({
+  padding: theme.spacing(3, 6),
+  transition: 'none',
+  backgroundColor: 'var(--mui-palette-action-hover)',
+  borderBlockEnd: '0 !important',
+  '&.Mui-expanded': {
+    borderBlockEnd: '1px solid var(--mui-palette-divider) !important'
+  }
+}))
+
+// Styled component for AccordionDetails component
+export const AccordionDetails = styled(MuiAccordionDetails)<AccordionDetailsProps>(({ theme }) => ({
+  padding: `${theme.spacing(4, 3)} !important`,
+  backgroundColor: 'var(--mui-palette-background-paper)'
+}))
 
 interface Chapter {
-  name: string;
-  title: string;
-  idx: number;
-  isScormPackage: boolean;
-  lessons: Lesson[];
+  name: string
+  title: string
+  idx: number
+  isScormPackage: boolean
+  lessons: Lesson[]
 }
 
 interface Lesson {
-  name: string;
-  title: string;
-  icon: string;
-  isComplete: boolean;
+  name: string
+  title: string
+  icon: string
+  isComplete: boolean
 }
 
-const sampleOutline: Chapter[] = [
-  {
-    name: 'chapter-1',
-    title: 'Chapter 1',
-    idx: 1,
-    isScormPackage: false,
-    lessons: [
-      {
-        name: 'lesson-1',
-        title: 'Lesson 1',
-        icon: 'icon-youtube',
-        isComplete: true,
-      },
-      {
-        name: 'lesson-2',
-        title: 'Lesson 2',
-        icon: 'icon-list',
-        isComplete: false,
-      },
-    ],
-  },
-  {
-    name: 'chapter-2',
-    title: 'Chapter 2',
-    idx: 2,
-    isScormPackage: false,
-    lessons: [],
-  },
-];
+// const sampleOutline: Chapter[] = [
+//   {
+//     name: 'chapter-1',
+//     title: 'Chapter 1',
+//     idx: 1,
+//     isScormPackage: false,
+//     lessons: [
+//       {
+//         name: 'lesson-1',
+//         title: 'Lesson 1',
+//         icon: 'icon-youtube',
+//         isComplete: true
+//       },
+//       {
+//         name: 'lesson-2',
+//         title: 'Lesson 2',
+//         icon: 'icon-list',
+//         isComplete: false
+//       }
+//     ]
+//   },
+//   {
+//     name: 'chapter-2',
+//     title: 'Chapter 2',
+//     idx: 2,
+//     isScormPackage: false,
+//     lessons: []
+//   }
+// ]
 
 const ChapterOutline2: React.FC = () => {
-  const [outline, setOutline] = useState(sampleOutline);
-  const [allowEdit, setAllowEdit] = useState(true);
+  const [outline, setOutline] = useState([])
+  const [allowEdit, setAllowEdit] = useState(true)
 
-  const params = useParams();
-  const [currentChapter, setCurrentChapter] = useState({});
-  const [currentLesson, setCurrentLesson] = useState({});
-  const { data: outlineData, error, isLoading, refetch } = 
-    useGetCourseOutlineQuery({courseName: params.courseName, getProgress: false});
+  const params = useParams()
+  const [currentChapter, setCurrentChapter] = useState({})
+  const [currentLesson, setCurrentLesson] = useState({})
+  const {
+    data: outlineData,
+    error,
+    isLoading,
+    refetch
+  } = useGetCourseOutlineQuery({ courseName: params.courseName, getProgress: false })
+  const [deleteChapter] = useDeleteChapterMutation()
 
   useEffect(() => {
     setOutline(outlineData?.message)
-  },[outlineData])
+  }, [outlineData])
 
   const handleAddChapter = () => {
     setModalOpen(true)
@@ -100,7 +178,7 @@ const ChapterOutline2: React.FC = () => {
     //   lessons: [],
     // };
     // setOutline([...outline, newChapter]);
-  };
+  }
 
   const handleEditChapter = (chapter: Chapter) => {
     setModalOpen(true)
@@ -114,13 +192,17 @@ const ChapterOutline2: React.FC = () => {
     //     )
     //   );
     // }
-  };
+  }
 
-  const handleDeleteChapter = (chapter: Chapter) => {
-    // if (window.confirm(`Are you sure you want to delete ${chapter.title}?`)) {
-    //   setOutline(outline.filter((ch) => ch.name !== chapter.name));
-    // }
-  };
+  const handleDeleteChapter = async (chapter: Chapter) => {
+    if (window.confirm(`Are you sure you want to delete ${chapter.title}?`)) {
+      //   setOutline(outline.filter(ch => ch.name !== chapter.name))
+      // await deleteChapter(() => close, chapter, refetch)
+
+      await deleteChapter(chapter.name).unwrap()
+      refetch()
+    }
+  }
 
   const handleAddLesson = (chapter: Chapter) => {
     // const newLesson: Lesson = {
@@ -136,7 +218,7 @@ const ChapterOutline2: React.FC = () => {
     //       : ch
     //   )
     // );
-  };
+  }
 
   const handleEditLesson = (lesson: Lesson, chapter: Chapter) => {
     setModalOpen(true)
@@ -158,7 +240,7 @@ const ChapterOutline2: React.FC = () => {
     //     )
     //   );
     // }
-  };
+  }
 
   const handleDeleteLesson = (lesson: Lesson, chapter: Chapter) => {
     // if (window.confirm(`Are you sure you want to delete ${lesson.title}?`)) {
@@ -173,19 +255,19 @@ const ChapterOutline2: React.FC = () => {
     //     )
     //   );
     // }
-  };
+  }
 
-  const [modalOpen, setModalOpen] = useState(false);
-//   const [outline, setOutline] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false)
+  //   const [outline, setOutline] = useState(0);
 
-//   const sampleChapterDetail = {
-//     title: "Introduction to React",
-//     is_scorm_package: true,
-//     scorm_package: {
-//       file_name: "react-intro.zip",
-//       file_size: "2.3 MB",
-//     },
-//   };
+  //   const sampleChapterDetail = {
+  //     title: "Introduction to React",
+  //     is_scorm_package: true,
+  //     scorm_package: {
+  //       file_name: "react-intro.zip",
+  //       file_size: "2.3 MB",
+  //     },
+  //   };
 
   const getCurrentChapter = () => {
     return currentChapter
@@ -196,46 +278,47 @@ const ChapterOutline2: React.FC = () => {
   }
 
   const handleOutlineReload = () => {
-    console.log("Outline reloaded");
     // setOutline(outline + 1);
-  };
+  }
 
   return (
+    // <Card>
+    //   <CardContent>
     <Box>
-      <Box display="flex" justifyContent="space-between" mb={4} px={2}>
-        <Typography variant="h6">Chapter Outline</Typography>
+      <Box display='flex' justifyContent='space-between' mb={4} px={2}>
+        <Typography variant='h6'>Chapter Outline</Typography>
         {allowEdit && (
-          <Button variant="contained" size="small" onClick={handleAddChapter}>
+          <Button variant='contained' size='small' onClick={handleAddChapter}>
             Add Chapter
           </Button>
         )}
       </Box>
 
-      {outline?.map((chapter:any) => (
+      {outline?.map((chapter: any) => (
         <Accordion key={chapter.name} defaultExpanded={chapter.idx === 1}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Box display="flex" alignItems="center" width="100%">
+            <Box display='flex' alignItems='center' width='100%'>
               <Typography>{chapter.title}</Typography>
-              <Box ml="auto" display="flex" gap={1}>
+              <Box ml='auto' display='flex' gap={1}>
                 {allowEdit && (
                   <>
-                    <Tooltip title="Edit Chapter">
+                    <Tooltip title='Edit Chapter'>
                       <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditChapter(chapter);
+                        onClick={e => {
+                          e.stopPropagation()
+                          handleEditChapter(chapter)
                         }}
                       >
                         <i className='tabler-edit text-[22px]' />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Chapter">
+                    <Tooltip title='Delete Chapter'>
                       <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteChapter(chapter);
+                        onClick={e => {
+                          e.stopPropagation()
+                          handleDeleteChapter(chapter)
                         }}
-                        color="error"
+                        color='error'
                       >
                         <i className='tabler-trash text-[22px]' />
                       </IconButton>
@@ -247,23 +330,20 @@ const ChapterOutline2: React.FC = () => {
           </AccordionSummary>
           <AccordionDetails>
             <List>
-              {chapter.lessons.map((lesson:any) => (
+              {chapter.lessons.map((lesson: any) => (
                 <ListItem key={lesson.name}>
                   <PlayCircleOutlineIcon sx={{ mr: 2 }} />
                   <ListItemText primary={lesson.title} />
                   {allowEdit && (
-                    <Box ml="auto" display="flex" gap={1}>
-                      <Tooltip title="Edit Lesson">
+                    <Box ml='auto' display='flex' gap={1}>
+                      <Tooltip title='Edit Lesson'>
                         <IconButton onClick={() => handleEditLesson(lesson, chapter)}>
-                            <i className='tabler-edit text-[22px]' />
+                          <i className='tabler-edit text-[22px]' />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Delete Lesson">
-                        <IconButton
-                          onClick={() => handleDeleteLesson(lesson, chapter)}
-                          color="error"
-                        >
-                            <i className='tabler-trash text-[22px]' />
+                      <Tooltip title='Delete Lesson'>
+                        <IconButton onClick={() => handleDeleteLesson(lesson, chapter)} color='error'>
+                          <i className='tabler-trash text-[22px]' />
                         </IconButton>
                       </Tooltip>
                     </Box>
@@ -272,11 +352,7 @@ const ChapterOutline2: React.FC = () => {
               ))}
             </List>
             {allowEdit && (
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => handleAddLesson(chapter)}
-              >
+              <Button variant='outlined' size='small' onClick={() => handleAddLesson(chapter)}>
                 Add Lesson
               </Button>
             )}
@@ -284,8 +360,7 @@ const ChapterOutline2: React.FC = () => {
         </Accordion>
       ))}
 
-
-    {/* <ChapterDialog
+      {/* <ChapterDialog
       open={open}
       onClose={onClose}
       outlineReload={outlineReload}
@@ -294,18 +369,17 @@ const ChapterOutline2: React.FC = () => {
     /> */}
       <ChapterDialog
         open={modalOpen}
-        // open={true}
         onClose={() => setModalOpen(false)}
         outlineReload={handleOutlineReload}
         course={params.courseName}
         chapterDetail={getCurrentChapter()}
-        // lessonDetail={getCurrentLesson()}
         outline={outline}
-        // setOutline={setOutline}
         refetch={refetch}
       />
     </Box>
-  );
-};
+    //   </CardContent>
+    // </Card>
+  )
+}
 
-export default ChapterOutline2;
+export default ChapterOutline2

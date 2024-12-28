@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -8,28 +8,28 @@ import {
   TextField,
   FormControlLabel,
   Switch,
-  CircularProgress,
-} from "@mui/material";
+  CircularProgress
+} from '@mui/material'
 // import { useCreateChapterMutation } from "@/redux-store/features/course/courseApi";
 
-import useChapterResources from "./Custom";
+import useChapterResources from './Custom'
 
 interface ChapterDialogProps {
-  open: boolean;
-  onClose: () => void;
-  outlineReload: () => void;
-  course: any;
-//   chapterDetail?: {
-//     title?: string;
-//     is_scorm_package?: boolean;
-//     scorm_package?: any;
-//   };
-  chapterDetail: any;
-  outline: any;
-//   setOutline: () => void;
-//   setOutline: (outline: any) => void;
-//   lessonDetail: any;
-    refetch: any;
+  open: boolean
+  onClose: () => void
+  outlineReload: () => void
+  course: any
+  //   chapterDetail?: {
+  //     title?: string;
+  //     is_scorm_package?: boolean;
+  //     scorm_package?: any;
+  //   };
+  chapterDetail: any
+  outline: any
+  //   setOutline: () => void;
+  //   setOutline: (outline: any) => void;
+  //   lessonDetail: any;
+  refetch: any
 }
 
 const ChapterDialog: React.FC<ChapterDialogProps> = ({
@@ -39,104 +39,88 @@ const ChapterDialog: React.FC<ChapterDialogProps> = ({
   course,
   chapterDetail,
   outline,
-  refetch,
-//   setOutline,
-//   lessonDetail,
+  refetch
+  //   setOutline,
+  //   lessonDetail,
 }) => {
-//   const [createChapter, { isLoading: isCreating }] = useCreateChapterMutation();
-  const { addChapter } = useChapterResources({ course, chapterDetail, refetch});
+  //   const [createChapter, { isLoading: isCreating }] = useCreateChapterMutation();
+  const { addChapter, editChapter } = useChapterResources({ course, chapterDetail, refetch })
 
+  //   console.log(chapterDetail)
 
+  // console.log(lessonDetail)
 
-    // console.log(lessonDetail)
-
-//   const [chapter, setChapter] = useState({
-//     title: "",
-//     is_scorm_package: false,
-//     scorm_package: null,
-//   });
+  //   const [chapter, setChapter] = useState({
+  //     title: "",
+  //     is_scorm_package: false,
+  //     scorm_package: null,
+  //   });
 
   useEffect(() => {
     if (chapterDetail) {
       setChapter({
-        title: chapterDetail.title || "",
+        title: chapterDetail.title || '',
         is_scorm_package: chapterDetail.is_scorm_package || false,
-        scorm_package: chapterDetail.scorm_package || null,
-      });
+        scorm_package: chapterDetail.scorm_package || null
+      })
     }
-  }, [chapterDetail]);
+  }, [chapterDetail])
 
-  const [chapter, setChapter] = useState(chapterDetail || { title: "", name: "" });
-
+  const [chapter, setChapter] = useState(chapterDetail || { title: '', name: '' })
 
   useEffect(() => {
-    setChapter(chapterDetail || { title: "", name: "" });
-  }, [chapterDetail]);
-
-//   const handleTitleChange = (newTitle: string) => {
-//     setChapter((prev:any) => ({ ...prev, title: newTitle }));
-//     setOutline(
-//       outline.map((ch:any) =>
-//         ch.name === chapter.name ? { ...ch, title: newTitle } : ch
-//       )
-//     );
-//   };
+    setChapter(chapterDetail || { title: '', name: '' })
+  }, [chapterDetail])
 
   const handleSubmit = async () => {
     try {
       if (!chapter.title) {
-        alert("Title is required");
-        return;
+        alert('Title is required')
+        return
       }
 
       if (chapter.is_scorm_package && !chapter.scorm_package) {
-        alert("Please upload a SCORM package");
-        return;
+        alert('Please upload a SCORM package')
+        return
       }
 
-      // Simulate API request
-    //   await new Promise((resolve) => setTimeout(resolve, 1000));
-        //  await createChapter({chapter, course}).unwrap();
-        // console.log({course, chapter})
+      // addChapter(close, chapter)
+      // await addChapter(() => setOpen(false), chapterData, refetch);
+      if (!chapterDetail || Object.keys(chapterDetail).length === 0) {
+        await addChapter(() => close, chapter, refetch)
+        setChapter(null)
+      } else {
+        await editChapter(() => close, chapter, refetch)
+      }
 
-
-        // addChapter(close, chapter)
-        // await addChapter(() => setOpen(false), chapterData, refetch);
-        await addChapter(() => close, chapter, refetch);
-
-
-
-    //   alert("Chapter saved successfully!");
-      outlineReload();
-      onClose();
+      outlineReload()
+      onClose()
     } catch (error) {
-      console.error("Error saving chapter:", error);
-      alert("Failed to save the chapter.");
+      console.error('Error saving chapter:', error)
+      alert('Failed to save the chapter.')
     }
-  };
+  }
 
-//   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = event.target.files?.[0];
-//     if (file) {
-//       const isValid = validateFile(file);
-//       if (isValid) {
-//         setChapter((prev) => ({ ...prev, scorm_package: file }));
-//       } else {
-//         alert("Only zip files are allowed");
-//       }
-//     }
-//   };
+  //   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     const file = event.target.files?.[0];
+  //     if (file) {
+  //       const isValid = validateFile(file);
+  //       if (isValid) {
+  //         setChapter((prev) => ({ ...prev, scorm_package: file }));
+  //       } else {
+  //         alert("Only zip files are allowed");
+  //       }
+  //     }
+  //   };
 
-//   const validateFile = (file: File) => {
-//     const extension = file.name.split(".").pop()?.toLowerCase();
-//     return extension === "zip";
-//   };
+  //   const validateFile = (file: File) => {
+  //     const extension = file.name.split(".").pop()?.toLowerCase();
+  //     return extension === "zip";
+  //   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle>
-        {chapterDetail ? "Edit Chapter" : "Add Chapter"}
-      </DialogTitle>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth='lg'>
+      <DialogTitle>{chapterDetail ? 'Edit Chapter' : 'Add Chapter'}</DialogTitle>
       <DialogContent>
         {/* <TextField
           label="Title"
@@ -149,14 +133,12 @@ const ChapterDialog: React.FC<ChapterDialogProps> = ({
           required
         /> */}
         <TextField
-          label="Title"
-          value={chapter.title}
-        //   onChange={(e) => handleTitleChange(e.target.value)}
-          onChange={(e) =>
-            setChapter((prev:any) => ({ ...prev, title: e.target.value }))
-          }
+          label='Title'
+          value={chapter?.title}
+          //   onChange={(e) => handleTitleChange(e.target.value)}
+          onChange={e => setChapter((prev: any) => ({ ...prev, title: e.target.value }))}
           fullWidth
-          margin="normal"
+          margin='normal'
           required
         />
         {/* <FormControlLabel
@@ -206,15 +188,15 @@ const ChapterDialog: React.FC<ChapterDialogProps> = ({
         )} */}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={onClose} color='secondary'>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
-          {chapterDetail ? "Edit" : "Create"}
+        <Button onClick={handleSubmit} variant='contained' color='primary'>
+          {!chapterDetail || Object.keys(chapterDetail).length === 0 ? 'Create' : 'Edit'}
         </Button>
       </DialogActions>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ChapterDialog;
+export default ChapterDialog
